@@ -52,7 +52,7 @@ export  function ProductItemTable(props: TProductItemPageProps): JSX.Element {
   }
 
   function handleUpdateItem(response: TProductItemDto): void {
-    const itemIndex = items.findIndex((item => item.id == response.id));
+    const itemIndex = items.findIndex((item => item.id === response.id));
     items[itemIndex].name = response.name;
     items[itemIndex].price = response.price;
   }

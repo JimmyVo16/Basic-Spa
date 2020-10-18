@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Navbar, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   navItems: {
