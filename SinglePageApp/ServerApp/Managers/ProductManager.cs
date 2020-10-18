@@ -1,60 +1,92 @@
-﻿using DomainLayer;
-using ServerApp.Models;
-using ServerApp.Models;
-using SinglePageApp.ServerApp.Mappers;
+﻿using SinglePageApp.ServerApp.Mappers;
 using SinglePageApp.ServerApp.Models;
-using SinglePageApp.Services;
-using System.Collections.Generic;
+using SinglePageApp.ServerApp.Repository;
+using System.Linq;
 
 namespace SinglePageApp.Managers
 {
     public class ProductManager : IProductManager
     {
-        private readonly IProductService _ProductService;
+        private readonly IProductRepository _ProductRepository;
 
-        public ProductManager(IProductService productService)
+        public ProductManager(IProductRepository productRepository)
         {
-            _ProductService = productService;
-        }
-
-        public MaxPriceDto GetMaxPriceForItem(string itemName)
-        {
-            var price = _ProductService.GetMaxPriceForItem(itemName);
-
-            if (price.HasValue)
-            {
-                return new MaxPriceDto
-                {
-                    MaxPrice = price.Value
-                };
-            }
-
-            return null;
+            _ProductRepository = productRepository;
         }
 
         public ProductItemsDto GetProductItems()
         {
             return new ProductItemsDto
             {
-                Items = _ProductService.GetProductItems().MapToProductItemDtos()
+                Items = _ProductRepository.GetProductItems().MapToProductItemDtos()
             };
         }
 
-        public ProductItemDto SaveProductItem(ProductItemDto inputDto)
+        public bool DeleteProductItem(int itemId)
         {
-            // Jimmy validation
-            if (inputDto == null)
-            {
-                return null;
-            }
+            return _ProductRepository.DeleteProductItem(itemId);
+        }
 
+        public ProductItemsDto GetMaxPriceForItems()
+        {
+            var items = _ProductRepository
+                .GetProductItems()
+                .GroupBy(i => i.Name)
+                .Select(
+                    i => i.OrderByDescending(x => x.Price)
+                     .First());
+
+            return new ProductItemsDto
+            {
+                Items = items.MapToProductItemDtos()
+            };
+        }
+
+        public ProductItemDto CreateProductItem(InsertedProductItemDto inputDto)
+        {
             var item = inputDto.MapToProductItem();
 
-            _ProductService.SaveProductItem(item);
+            var newItemId = _ProductRepository.CreateProductItem(item);
 
-            return _ProductService
-                .GetProductItem(item)
-                .MapToProductItemDto();
+            if (newItemId.HasValue)
+            {
+                return _ProductRepository
+                    .GetProductItem(newItemId.Value)
+                    .MapToProductItemDto();
+            }
+
+            return null;
+        }
+
+        public ProductItemDto UpdateProductItem(ProductItemDto itemToBeUpdated)
+        {
+            var updatedItem = _ProductRepository
+                .UpdateProductItem(itemToBeUpdated.MapToProductItem());
+
+            if (updatedItem != null)
+            {
+                return updatedItem.MapToProductItemDto();
+            }
+
+            return null;
+        }
+
+        public ProductItemDto GetMaxPriceForItem(string itemName)
+        {
+            var matchedItem = _ProductRepository
+                .GetProductItems()
+                .GroupBy(i => i.Name)
+                .SingleOrDefault(i => i.Key.Equals(itemName, System.StringComparison.InvariantCultureIgnoreCase));
+
+            if (matchedItem != null)
+            {
+                return matchedItem
+                    .OrderByDescending(i => i.Price)
+                    .First()
+                    .MapToProductItemDto();
+            }
+
+            return null;
         }
     }
 }

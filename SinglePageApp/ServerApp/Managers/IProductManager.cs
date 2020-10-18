@@ -1,5 +1,4 @@
 ﻿using SinglePageApp.ServerApp.Models;
-using System.Collections.Generic;
 
 namespace SinglePageApp.Managers
 {
@@ -7,8 +6,14 @@ namespace SinglePageApp.Managers
     {
         ProductItemsDto GetProductItems();
 
-        MaxPriceDto GetMaxPriceForItem(string itemName);
+        ProductItemsDto GetMaxPriceForItems();
 
-        ProductItemDto SaveProductItem(ProductItemDto item);
+        ProductItemDto GetMaxPriceForItem(string itemName);
+
+        ProductItemDto CreateProductItem(InsertedProductItemDto item);
+
+        ProductItemDto UpdateProductItem(ProductItemDto item);
+
+        bool DeleteProductItem(int itemId);
     }
 }

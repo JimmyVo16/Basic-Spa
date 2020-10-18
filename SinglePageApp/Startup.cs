@@ -1,14 +1,12 @@
 using DomainLayer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ServerApp.Repository;
 using SinglePageApp.Managers;
-using SinglePageApp.Services;
+using SinglePageApp.ServerApp.Repository;
 
 namespace SinglePageApp
 {
@@ -24,9 +22,8 @@ namespace SinglePageApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Jimmy anki this is the built-in DI
-            services.AddSingleton<IProductRepository, CvsProvider>();
-            services.AddSingleton<IProductService, ProductService>();
+            services.AddSingleton<IDataSource, CvsDataSource>();
+            services.AddSingleton<IProductRepository, ProductRepository>();
             services.AddSingleton<IProductManager, ProductManager>();
 
             services.AddControllersWithViews();
@@ -52,7 +49,6 @@ namespace SinglePageApp
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
@@ -60,27 +56,11 @@ namespace SinglePageApp
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapControllerRoute(
-                //    name: "products",
-                //    pattern: "v1/products",
-                //    defaults: new { controller = "Products", action = "GetItems" });
-                // Jimmy it's return a 200 when the enpoint doesn't exists.
-                
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
-
-                //endpoints.MapControllerRoute(
-                //name: "test",
-                //pattern: "{controller}/{action=Index}/{id?}");
-
-                //endpoints.MapControllerRoute(
-                //    name: "products",
-                //    pattern: "products/items",
-                //    defaults: new { controller = "Product", action = "Get" });
             });
 
-            // Jimmy interesting this is where it's appending the client.
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";

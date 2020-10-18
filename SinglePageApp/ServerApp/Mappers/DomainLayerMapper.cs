@@ -34,5 +34,14 @@ namespace SinglePageApp.ServerApp.Mappers
                 Price = source.Price,
             };
         }
+
+        public static ProductItem MapToProductItem(this InsertedProductItemDto source)
+        {
+            return new ProductItem
+            {
+                Name = source.Name,
+                Price = source.Price,
+            };
+        }
     }
 }

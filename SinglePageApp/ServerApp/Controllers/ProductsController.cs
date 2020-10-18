@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SinglePageApp.Managers;
 using SinglePageApp.ServerApp.Models;
-using System.Collections.Generic;
 
 namespace SinglePageApp.Controllers
 {
-    [Route("v1/[controller]")]
+    [Route("v1/[controller]/items")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
@@ -16,61 +15,92 @@ namespace SinglePageApp.Controllers
             _ProductManager = productManager;
         }
 
-        // Anki Jimmy the reason why it was erroring is because it's has a / infront of it.
         [HttpGet]
-        [Route("items")]
-        public ProductItemsDto GetItems()
+        public ActionResult<ProductItemsDto> GetAllItems()
         {
             return _ProductManager.GetProductItems();
         }
 
-        [Route("items/{itemName}")]
-        public MaxPriceDto Get(string itemName)
+        [HttpGet("max-price/{itemName}")]
+        public ActionResult<ProductItemDto> GetMaxPriceForItem(string itemName)
         {
-            var response = _ProductManager.GetMaxPriceForItem(itemName);
-
-            if (response == null)
+            if (string.IsNullOrWhiteSpace(itemName))
             {
-                //Jimmy return 404
+                return this.Problem($"Item name is invalid", null, 400);
             }
 
-            //Jimmy validatation for can't find item.
-            return response;
+            var result = _ProductManager.GetMaxPriceForItem(itemName);
+
+            if (result == null)
+            {
+                return this.Problem($"No items were found with the name '{itemName}'.", null, 404);
+            }
+
+            return result;
+        }
+
+        [HttpGet("max-price")]
+        public ActionResult<ProductItemsDto> GetMaxPriceForItems()
+        {
+            return _ProductManager.GetMaxPriceForItems();
         }
 
         [HttpPost]
-        [Route("items")]
-        public ProductItemDto Post([FromBody] ProductItemDto inputDto)
+        public ActionResult<ProductItemDto> Post([FromBody] InsertedProductItemDto inputDto)
         {
-            return _ProductManager.SaveProductItem(inputDto);
+            if (inputDto == null 
+                || string.IsNullOrWhiteSpace(inputDto.Name)
+                || inputDto.Price == 0)
+            {
+                return this.Problem($"Item name and price must be provided", null, 400);
+            }
+
+            var result = _ProductManager.CreateProductItem(inputDto);
+
+            if (result == null)
+            {
+                return this.Problem("Unable to create item", null, 500);
+            }
+
+            return result;
         }
 
+        public ActionResult<ProductItemDto> Patch([FromBody] ProductItemDto itemToBeUpdated)
+        {
+            if (itemToBeUpdated == null || itemToBeUpdated.Id == 0)
+            {
+                return this.Problem($"Invalid product item", null, 400);
+            }
 
-        //[HttpGet]
-        //[Route("items")]
-        //public HttpResponseMessage GetItems()
-        //{ Jimmy
-        //    JsonSerializerSettings settings = new JsonSerializerSettings();
-        //    string json = JsonConvert.SerializeObject(_ProductManager.GetProductItems(), settings);
+            if (string.IsNullOrWhiteSpace(itemToBeUpdated.Name) || itemToBeUpdated.Price == 0)
+            {
+                return this.Problem($"New values must be valid", null, 400);
+            }
 
-        //    HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, "value");
-        //    response.Content = new StringContent(json, Encoding.Unicode, "json");
-        //    return response;
+            var updatedItem = _ProductManager.UpdateProductItem(itemToBeUpdated);
 
-        //}
+            if (updatedItem == null)
+            {
+                return this.Problem($"Unable to update item.", null, 500);
+            }
 
+            return updatedItem;
+        }
 
+        [HttpDelete("{productItemId}")]
+        public ActionResult Delete(int productItemId)
+        {
+            if (productItemId <= 0)
+            {
+                return this.Problem($"Product item id '{productItemId}' is invalid", null, 400);
+            }
 
-        //// PUT: api/Product/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+            if (_ProductManager.DeleteProductItem(productItemId))
+            {
+                return Ok();
+            }
 
-        //// DELETE: api/ApiWithActions/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+            return this.Problem($"Unable to delete Product item id '{productItemId}'", null, 500);
+        }
     }
 }

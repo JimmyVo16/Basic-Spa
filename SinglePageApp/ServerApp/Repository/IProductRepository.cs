@@ -1,21 +1,18 @@
 ﻿using ServerApp.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
-// Jimmy update the namespace
-namespace ServerApp.Repository
+namespace SinglePageApp.ServerApp.Repository
 {
     public interface IProductRepository
     {
-        // Jimmy maybe turn this into async
         IEnumerable<ProductItem> GetProductItems();
 
-        decimal? GetMaxPriceForItem(string itemName);
+        int? CreateProductItem(ProductItem item);
 
-        void SaveProductItem(ProductItem item);
+        ProductItem GetProductItem(int itemId);
 
-        ProductItem GetProductItem(ProductItem item);
+        ProductItem UpdateProductItem(ProductItem item);
 
+        bool DeleteProductItem(int itemId);
     }
 }
