@@ -15,7 +15,7 @@ namespace SinglePagApp
     public class ProductRepositoryTests
     {
         [Test]
-        public void ShouldGenerateNewIdWhenInsertingNewItems()
+        public async Task ShouldGenerateNewIdWhenInsertingNewItems()
         {
             // Arrange
             var fixture = new Fixture();
@@ -40,7 +40,7 @@ namespace SinglePagApp
             var tasks = items.Select(i => Task.Run(() => repo.CreateProductItem(i)));
 
             // Act
-            Task.WhenAll(tasks);
+            await Task.WhenAll(tasks);
 
             // Assert
             var expectedItems = repo.GetProductItems();
