@@ -5,7 +5,7 @@ pipeline{
             steps{
                 echo '''
                 cd ./SinglePageApp/ClientApp/
-                ls 
+                npm run build 
                 '''
             }
             post{
