@@ -5,7 +5,7 @@ pipeline{
             steps{
                 echo '''
                 cd ./SinglePageApp/ClientApp/
-                npm run build 
+                npm run asdfsf 
                 '''
             }
             post{
