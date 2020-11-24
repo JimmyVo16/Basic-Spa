@@ -5,7 +5,9 @@ pipeline{
             steps{
                 sh '''
                 cd ./SinglePageApp/ClientApp/
+                npm run i
                 npm run build 
+                npm run test
                 '''
             }
             post{
