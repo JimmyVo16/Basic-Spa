@@ -3,7 +3,7 @@ pipeline{
     stages{
         stage("Build"){
             steps{
-                echo '''
+                sh '''
                 cd ./SinglePageApp/ClientApp/
                 npm run build 
                 '''
