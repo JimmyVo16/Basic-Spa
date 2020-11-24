@@ -3,9 +3,9 @@ pipeline{
     stages{
         stage("Build"){
             steps{
-                sh '''
+                echo '''
                 cd ./SinglePageApp/ClientApp/
-                npm run asdfsf 
+                npm run build 
                 '''
             }
             post{
