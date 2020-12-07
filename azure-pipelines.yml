@@ -16,18 +16,14 @@ pr:
 pool:
   vmImage: 'windows-latest'
 
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-
 stages:
-  - stage: Checkout
-    displayName: 'Checkout the code from repo'
+  - stage: QualityGates
+    displayName: 'Quality Gates'
     jobs: 
-    - job: Checkout
+    - job: Build
+      displayName: 'Build'
       steps:
-      
+
       - task: NodeTool@0 
         inputs:
           versionSpec: '10.14.1'
@@ -42,6 +38,10 @@ stages:
           cd ./SinglePageApp/ClientApp/
           npm run build
         displayName: 'Build'
+
+- job: Test
+      steps:
+      displayName: 'Test'
 
       - bash: |
           cd ./SinglePageApp/ClientApp/
