@@ -8,6 +8,9 @@ trigger:
     include:
     - public-main
     - ado-pipeline
+  paths:
+    include:
+    - SinglePageApp/ClientApp/*
 
 pr:
   - public-main
@@ -21,21 +24,14 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-steps:
-- task: NuGetToolInstaller@1
+stages:
+  stage: Checkout 
+  displayName: 'Checkout the code from repo'
+  jobs:
+    job: Checkout 
+    steps:
+    - checkout: self
+    bash: |
+      echo 'hello world'
+    displayName: 'Hello world'
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
-
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
