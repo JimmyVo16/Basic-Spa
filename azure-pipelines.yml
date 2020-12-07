@@ -39,11 +39,11 @@ stages:
           npm run build
         displayName: 'Build'
 
-- job: Test
-      steps:
-      displayName: 'Test'
+    - job: Test
+          steps:
+          displayName: 'Test'
 
-      - bash: |
-          cd ./SinglePageApp/ClientApp/
-          npm run test
-        displayName: 'Test'
+          - bash: |
+              cd ./SinglePageApp/ClientApp/
+              npm run test
+            displayName: 'Test'
