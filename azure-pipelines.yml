@@ -25,10 +25,10 @@ variables:
   buildConfiguration: 'Release'
 
 stages:
-  stage: Checkout 
+  stage: Checkout
   displayName: 'Checkout the code from repo'
   jobs:
-    job: Checkout 
+    job: Checkout
     steps:
     - checkout: self
     bash: |
