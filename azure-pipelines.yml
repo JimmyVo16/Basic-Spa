@@ -13,16 +13,38 @@ pr:
   - public-main
   - ado-pipeline
 
+
+variables:
+  sourceId: sourceCode_$(Build.BuildId)
+
 pool:
   vmImage: 'windows-latest'
 
 stages:
+  - stage: Checkout
+    displayName: 'Checkout out source'
+    jobs:
+    - job: 'Checkout'
+      steps:
+        - checkout: self
+        - publish: $(Build.SourcesDirectory)
+          displayName: 'Stash source'
+          artifact: $(sourceId)
+
   - stage: QualityGates
     displayName: 'Quality Gates'
     jobs: 
     - job: Build
       displayName: 'Build'
       steps:
+      - checkout: none
+
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Unstash source'
+        inputs:
+          artifact: $(sourceId)
+          path: $(Build.SourcesDirectory)
+
       - task: NodeTool@0 
         inputs:
           versionSpec: '10.14.1'
@@ -30,8 +52,8 @@ stages:
 
       - script: |
           cd ./SinglePageApp/ClientApp/
-          npm install
-        displayName: 'npm install'
+          npm ci
+        displayName: 'npm ci'
 
       - bash: |
           cd ./SinglePageApp/ClientApp/
@@ -40,9 +62,17 @@ stages:
 
     - job: Test
       displayName: 'Test'
+      dependsOn: Build
       steps:
-        - checkout: none
-        - bash: |
-            cd ./SinglePageApp/ClientApp/
-            npm run test
-          displayName: 'Test'
+      - checkout: none
+
+      - task: DownloadPipelineArtifact@2
+        displayName: Retreive source code
+        inputs:
+          artifact: $(sourceId)
+          path: $(Build.SourcesDirectory)
+
+      - bash: |
+          cd ./SinglePageApp/ClientApp/
+          npm run test
+        displayName: 'Test'
