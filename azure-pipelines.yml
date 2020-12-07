@@ -41,6 +41,7 @@ stages:
     - job: Test
       displayName: 'Test'
       steps:
+        - checkout: none
         - bash: |
             cd ./SinglePageApp/ClientApp/
             npm run test
