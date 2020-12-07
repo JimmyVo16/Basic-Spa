@@ -35,7 +35,7 @@ stages:
         displayName: 'Install node'
 
       - script: |
-        npm install
+          npm install
         displayName: 'npm install'
 
       - bash: |
