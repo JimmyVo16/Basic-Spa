@@ -23,7 +23,6 @@ stages:
     - job: Build
       displayName: 'Build'
       steps:
-
       - task: NodeTool@0 
         inputs:
           versionSpec: '10.14.1'
@@ -40,9 +39,8 @@ stages:
         displayName: 'Build'
 
     - job: Test
-        displayName: 'Test'
-        steps:
-
+      displayName: 'Test'
+      steps:
         - bash: |
             cd ./SinglePageApp/ClientApp/
             npm run test
