@@ -40,10 +40,10 @@ stages:
         displayName: 'Build'
 
     - job: Test
-          steps:
-          displayName: 'Test'
+        displayName: 'Test'
+        steps:
 
-          - bash: |
-              cd ./SinglePageApp/ClientApp/
-              npm run test
-            displayName: 'Test'
+        - bash: |
+            cd ./SinglePageApp/ClientApp/
+            npm run test
+          displayName: 'Test'
