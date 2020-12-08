@@ -74,6 +74,7 @@ stages:
         inputs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)'
           artifactName: build_$(Build.BuildId)
+          publishLocation: 'Container'
 
     - job: Test
       displayName: 'Test'
@@ -85,7 +86,7 @@ stages:
         displayName: 'Unstash source'
         inputs:
           artifactName: build_$(Build.BuildId)
-          downloadPath: $(Build.ArtifactStagingDirectory)
+          downloadPath: '$(Build.ArtifactStagingDirectory)'
 
       - bash: |
           cd ./SinglePageApp/ClientApp/
