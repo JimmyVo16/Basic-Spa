@@ -30,7 +30,7 @@ stages:
 
         - publish: $(Build.SourcesDirectory)
           displayName: 'Stash source'
-          artifact: sourceCode_$(Build.BuildId)
+          artifact: $(sourceId)
 
   - stage: QualityGates
     displayName: 'Quality Gates'
