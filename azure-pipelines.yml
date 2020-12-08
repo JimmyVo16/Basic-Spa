@@ -30,7 +30,7 @@ stages:
 
         - publish: $(Build.SourcesDirectory)
           displayName: 'Stash source'
-          artifact: $(sourceId)
+          artifact: sourceCode_$(Build.BuildId)
 
   - stage: QualityGates
     displayName: 'Quality Gates'
@@ -40,9 +40,11 @@ stages:
       steps:
       - checkout: none
 
-      - download: $(Build.SourcesDirectory)
-        displayName: Retreive source code
-        artifact: $(sourceId)
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Unstash source'
+        inputs:
+          artifact: $(sourceId)
+          path: $(Build.SourcesDirectory)
 
       - task: NodeTool@0 
         inputs:
@@ -65,9 +67,11 @@ stages:
       steps:
       - checkout: none
 
-      - download: $(Build.SourcesDirectory)
-        displayName: Retreive source code
-        artifact: $(sourceId)
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Unstash source'
+        inputs:
+          artifact: $(sourceId)
+          path: $(Build.SourcesDirectory)
 
       - bash: |
           cd ./SinglePageApp/ClientApp/
