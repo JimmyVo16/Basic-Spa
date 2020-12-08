@@ -18,7 +18,7 @@ variables:
   sourceId: sourceCode_$(Build.BuildId)
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-18.04'
 
 stages:
   - stage: Checkout
@@ -27,6 +27,7 @@ stages:
     - job: 'Checkout'
       steps:
         - checkout: self
+
         - publish: $(Build.SourcesDirectory)
           displayName: 'Stash source'
           artifact: $(sourceId)
@@ -39,11 +40,9 @@ stages:
       steps:
       - checkout: none
 
-      - task: DownloadPipelineArtifact@2
-        displayName: 'Unstash source'
-        inputs:
-          artifact: $(sourceId)
-          path: $(Build.SourcesDirectory)
+      - download: $(Build.SourcesDirectory)
+        displayName: Retreive source code
+        artifact: $(sourceId)
 
       - task: NodeTool@0 
         inputs:
@@ -66,11 +65,9 @@ stages:
       steps:
       - checkout: none
 
-      - task: DownloadPipelineArtifact@2
+      - download: $(Build.SourcesDirectory)
         displayName: Retreive source code
-        inputs:
-          artifact: $(sourceId)
-          path: $(Build.SourcesDirectory)
+        artifact: $(sourceId)
 
       - bash: |
           cd ./SinglePageApp/ClientApp/
