@@ -53,8 +53,8 @@ stages:
 
       - script: |
           cd ./SinglePageApp/ClientApp/
-          npm ci
-        displayName: 'npm ci'
+          npm install
+        displayName: 'npm install'
 
       - bash: |
           cd ./SinglePageApp/ClientApp/
