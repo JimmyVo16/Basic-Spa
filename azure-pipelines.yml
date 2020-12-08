@@ -18,7 +18,7 @@ variables:
   sourceId: sourceCode_$(Build.BuildId)
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-18.04'
 
 stages:
   - stage: Checkout
