@@ -61,6 +61,16 @@ stages:
           npm run build
         displayName: 'Build'
 
+      - bash: |
+          cd ./SinglePageApp/ClientApp/
+          npm run test
+        displayName: 'Test'
+
+      - bash: |
+          cd ./SinglePageApp/ClientApp/
+          ls
+        displayName: 'Test'
+
     - job: Test
       displayName: 'Test'
       dependsOn: Build
@@ -75,5 +85,6 @@ stages:
 
       - bash: |
           cd ./SinglePageApp/ClientApp/
+          ls
           npm run test
         displayName: 'Test'
