@@ -51,7 +51,7 @@ stages:
           versionSpec: '10.14.1'
         displayName: 'Install node'
 
-      - script: |
+      - bash: |
           cd ./SinglePageApp/ClientApp/
           npm install
         displayName: 'npm install'
@@ -67,9 +67,13 @@ stages:
         displayName: 'Test'
 
       - bash: |
-          cd ./SinglePageApp/ClientApp/
           ls
-        displayName: 'Test'
+        displayName: 'ls'
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathtoPublish: $(Build.ArtifactStagingDirectory)
+          artifactName: build_$(Build.BuildId)
 
     - job: Test
       displayName: 'Test'
@@ -77,11 +81,11 @@ stages:
       steps:
       - checkout: none
 
-      - task: DownloadPipelineArtifact@2
+      - task: DownloadBuildArtifacts@0
         displayName: 'Unstash source'
         inputs:
-          artifact: $(sourceId)
-          path: $(Build.SourcesDirectory)
+          artifactName: build_$(Build.BuildId)
+          downloadPath: $(Build.ArtifactStagingDirectory)
 
       - bash: |
           cd ./SinglePageApp/ClientApp/
