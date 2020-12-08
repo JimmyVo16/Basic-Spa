@@ -61,20 +61,41 @@ stages:
           npm run build
         displayName: 'Build'
 
-      - bash: |
-          cd ./SinglePageApp/ClientApp/
-          npm run test
-        displayName: 'Test'
+      # - bash: |
+      #     cd ./SinglePageApp/ClientApp/
+      #     npm run test
+      #   displayName: 'Test'
 
-      - bash: |
-          ls
-        displayName: 'ls'
+      # - bash: |
+      #     ls
+      #   displayName: 'ls'
 
       - task: PublishBuildArtifacts@1
+        displayName: 'try 1'
         inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          pathtoPublish: $(Build.SourcesDirectory)
           artifactName: build_$(Build.BuildId)
           publishLocation: 'Container'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'try 2'
+        inputs:
+          pathtoPublish: $(Build.SourcesDirectory)
+          artifactName: build_$(Build.BuildId)
+          publishLocation: 'Container'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'try 3'
+        inputs:
+          pathtoPublish: $(Build.SourcesDirectory)
+          artifactName: build_$(Build.BuildId)
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'try 4'
+        inputs:
+          pathtoPublish: $(Build.SourcesDirectory)
+          artifactName: build_$(Build.BuildId)
+
 
     - job: Test
       displayName: 'Test'
