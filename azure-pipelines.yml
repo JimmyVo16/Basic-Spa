@@ -53,64 +53,15 @@ stages:
 
       - bash: |
           cd ./SinglePageApp/ClientApp/
-          npm install
-        displayName: 'npm install'
+          npm ci
+        displayName: 'npm ci'
 
       - bash: |
           cd ./SinglePageApp/ClientApp/
           npm run build
         displayName: 'Build'
 
-      # - bash: |
-      #     cd ./SinglePageApp/ClientApp/
-      #     npm run test
-      #   displayName: 'Test'
-
-      # - bash: |
-      #     ls
-      #   displayName: 'ls'
-
-      - task: PublishBuildArtifacts@1
-        displayName: 'try 1'
-        inputs:
-          pathtoPublish: $(Build.SourcesDirectory)
-          artifactName: build_$(Build.BuildId)
-          publishLocation: 'Container'
-
-      - task: PublishBuildArtifacts@1
-        displayName: 'try 2'
-        inputs:
-          pathtoPublish: $(Build.SourcesDirectory)
-          artifactName: build_$(Build.BuildId)
-          publishLocation: 'Container'
-
-      - task: PublishBuildArtifacts@1
-        displayName: 'try 3'
-        inputs:
-          pathtoPublish: $(Build.SourcesDirectory)
-          artifactName: build_$(Build.BuildId)
-
-      - task: PublishBuildArtifacts@1
-        displayName: 'try 4'
-        inputs:
-          pathtoPublish: $(Build.SourcesDirectory)
-          artifactName: build_$(Build.BuildId)
-
-
-    - job: Test
-      displayName: 'Test'
-      dependsOn: Build
-      steps:
-      - checkout: none
-
-      - task: DownloadBuildArtifacts@0
-        displayName: 'Unstash source'
-        inputs:
-          artifactName: build_$(Build.BuildId)
-          downloadPath: '$(Build.ArtifactStagingDirectory)'
-
       - bash: |
           cd ./SinglePageApp/ClientApp/
-          ls
           npm run test
         displayName: 'Test'
