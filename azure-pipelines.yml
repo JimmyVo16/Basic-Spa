@@ -72,7 +72,7 @@ stages:
 
       - task: PublishBuildArtifacts@1
         inputs:
-          pathtoPublish: $(Build.ArtifactStagingDirectory)
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)'
           artifactName: build_$(Build.BuildId)
 
     - job: Test
