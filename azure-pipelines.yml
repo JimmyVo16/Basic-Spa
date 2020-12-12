@@ -1,34 +1,63 @@
-# ASP.NET Core (.NET Framework)
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+name: React App Pipeline
 
 trigger:
-- public-main
+  branches:
+    include:
+    - public-main
+  paths:
+    include:
+    - SinglePageApp/ClientApp/*
 
-pool:
-  vmImage: 'windows-latest'
+pr: none
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  sourceId: sourceCode_$(Build.BuildId)
 
-steps:
-- task: NuGetToolInstaller@1
+pool:
+  vmImage: 'ubuntu-18.04'
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+stages:
+  - stage: Checkout
+    displayName: 'Checkout out source'
+    jobs:
+    - job: 'Checkout'
+      steps:
+        - checkout: self
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+        - publish: $(Build.SourcesDirectory)
+          displayName: 'Stash source'
+          artifact: $(sourceId)
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  - stage: QualityGates
+    displayName: 'Quality Gates'
+    jobs: 
+    - job: Build
+      displayName: 'Build'
+      steps:
+      - checkout: none
+
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Unstash source'
+        inputs:
+          artifact: $(sourceId)
+          path: $(Build.SourcesDirectory)
+
+      - task: NodeTool@0 
+        inputs:
+          versionSpec: '10.14.1'
+        displayName: 'Install node'
+
+      - bash: |
+          cd ./SinglePageApp/ClientApp/
+          npm ci
+        displayName: 'npm ci'
+
+      - bash: |
+          cd ./SinglePageApp/ClientApp/
+          npm run build
+        displayName: 'Build'
+
+      - bash: |
+          cd ./SinglePageApp/ClientApp/
+          npm run test
+        displayName: 'Test'
