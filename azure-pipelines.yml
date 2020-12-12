@@ -4,15 +4,11 @@ trigger:
   branches:
     include:
     - public-main
-    - ado-pipeline
-  # paths:
-  #   include:
-  #   - SinglePageApp/ClientApp/*
+  paths:
+    include:
+    - SinglePageApp/ClientApp/*
 
-pr:
-  - public-main
-  - ado-pipeline
-
+pr: none
 
 variables:
   sourceId: sourceCode_$(Build.BuildId)
