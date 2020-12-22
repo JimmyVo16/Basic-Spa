@@ -50,6 +50,12 @@ stages:
           npm ci
         displayName: 'npm ci'
 
+
+      - task: PowerShell@2
+        displayName: testing
+        inputs:
+          filePath: SinglePageApp/ClientApp/devlops/debugging.ps1
+
       - bash: |
           cd ./SinglePageApp/ClientApp/
           npm run build
