@@ -72,7 +72,7 @@ stages:
 
       - task: ExtractFiles@1
         inputs:
-          archiveFilePatterns: " $(Pipeline.Workspace)/**/$(Build.BuildId)/test.zip"
+          archiveFilePatterns: "$(Pipeline.Workspace)/$(Build.BuildId)/test.zip"
           destinationFolder: $(Build.ArtifactStagingDirectory)
           cleanDestinationFolder: true
 
