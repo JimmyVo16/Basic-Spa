@@ -28,10 +28,6 @@ stages:
           displayName: 'Stash source'
           artifact: $(sourceId)
 
-        - publish: $(Build.SourcesDirectory)/devops
-          displayName: 'Stash devops'
-          artifact: devops_$(sourceId)
-
   - stage: QualityGates
     displayName: 'Quality Gates'
     jobs: 
@@ -46,15 +42,22 @@ stages:
           artifact: $(sourceId)
           path: $(Build.SourcesDirectory)
 
-      - task: DownloadPipelineArtifact@2
-        displayName: 'Unstash devops'
-        inputs:
-          artifact: devops_$(sourceId)
-          path: $(Build.SourcesDirectory)/devops
-
       - bash: |
           ls
         displayName: 'debug'
+
+      - bash: |
+          cd $(Build.SourcesDirectory)
+          ls
+        displayName: 'debug Build.SourcesDirectory'
+      - task: ArchiveFiles@2
+        displayName: Prepare Artifacts
+        inputs:
+          rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/devops'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+          replaceExistingArchive: true
 
 
 
