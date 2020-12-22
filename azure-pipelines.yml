@@ -46,18 +46,32 @@ stages:
           cd $(Build.SourcesDirectory)/SinglePageApp/ClientApp/devops
           ls
         displayName: 'debug Build.SourcesDirectory'
+
       - task: ArchiveFiles@2
-        displayName: Prepare Artifacts
+        displayName: Prepare build Artifacts
+        inputs:
+          rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/build'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/build.zip'
+          replaceExistingArchive: true
+
+      - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/build.zip'
+        displayName: Publish build artifacts
+        artifact: build_$(Build.BuildId)
+
+      - task: ArchiveFiles@2
+        displayName: Prepare devlops Artifacts
         inputs:
           rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/devops'
           includeRootFolder: false
           archiveType: 'zip'
-          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/test.zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/devops.zip'
           replaceExistingArchive: true
 
-      - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/test.zip'
-        displayName: Publish artifacts
-        artifact: Test_$(Build.BuildId)
+      - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/devops.zip'
+        displayName: Publish devops artifacts
+        artifact: devops_$(Build.BuildId)
 
   - stage: Download
     displayName: 'Download'
@@ -68,16 +82,30 @@ stages:
       - checkout: none
 
       - download: current
-        artifact: Test_$(Build.BuildId)
+        artifact: build_$(Build.BuildId)
+        
+      - download: current
+        artifact: devops_$(Build.BuildId)
 
       - task: ExtractFiles@1
         inputs:
-          archiveFilePatterns: "$(Pipeline.Workspace)/**/*.zip"
+          archiveFilePatterns: "$(Pipeline.Workspace)/**/build.zip"
           destinationFolder: $(Build.ArtifactStagingDirectory)
+          cleanDestinationFolder: true
+
+      - task: ExtractFiles@1
+        inputs:
+          archiveFilePatterns: "$(Pipeline.Workspace)/**/devops.zip"
+          destinationFolder: $(Build.ArtifactStagingDirectory)/test
           cleanDestinationFolder: true
 
       - bash: |
           cd $(Build.ArtifactStagingDirectory)
+          ls
+        displayName: 'debug Build.ArtifactStagingDirectory'
+
+      - bash: |
+          cd $(Build.ArtifactStagingDirectory)/test
           ls
         displayName: 'debug Build.ArtifactStagingDirectory'
 
