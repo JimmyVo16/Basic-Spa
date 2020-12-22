@@ -42,10 +42,20 @@ stages:
           artifact: $(sourceId)
           path: $(Build.SourcesDirectory)
 
+      - task: NodeTool@0 
+        inputs:
+          versionSpec: '10.14.1'
+        displayName: 'Install node'
+
       - bash: |
-          cd $(Build.SourcesDirectory)/SinglePageApp/ClientApp/devops
-          ls
-        displayName: 'debug Build.SourcesDirectory'
+          cd ./SinglePageApp/ClientApp/
+          npm ci
+        displayName: 'npm ci'
+
+      - bash: |
+          cd ./SinglePageApp/ClientApp/
+          npm run build
+        displayName: 'Build'
 
       - task: ArchiveFiles@2
         displayName: Prepare build Artifacts
