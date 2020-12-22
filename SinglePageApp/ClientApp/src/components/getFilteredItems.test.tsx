@@ -25,7 +25,7 @@ describe(`${getFilteredItems.name} tests`, () => {
         .toBe(undefined);
     },
   );
-  //Jimmy 3
+
   test.each`
     addedItem                            | description
     ${{ id: 4, name: "test1", price: 2 }}} | ${"added item's price is highest"}
