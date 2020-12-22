@@ -43,11 +43,7 @@ stages:
           path: $(Build.SourcesDirectory)
 
       - bash: |
-          ls
-        displayName: 'debug'
-
-      - bash: |
-          cd $(Build.SourcesDirectory)
+          cd $(Build.SourcesDirectory)/SinglePageApp/ClientApp/devops
           ls
         displayName: 'debug Build.SourcesDirectory'
       - task: ArchiveFiles@2
@@ -61,7 +57,7 @@ stages:
 
       - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/test.zip'
         displayName: Publish artifacts
-        artifact: jimmy
+        artifact: AutoSiteProvisioning_Build_$(Build.BuildId)
 
   - stage: Download
     displayName: 'Download'
@@ -72,7 +68,7 @@ stages:
       - checkout: none
 
       - download: current
-        artifact: jimmy
+        artifact: AutoSiteProvisioning_Build_$(Build.BuildId)
 
       - task: ExtractFiles@1
         inputs:
