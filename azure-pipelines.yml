@@ -28,6 +28,10 @@ stages:
           displayName: 'Stash source'
           artifact: $(sourceId)
 
+        - publish: $(Build.SourcesDirectory)/devops
+          displayName: 'Stash devops'
+          artifact: devops_$(sourceId)
+
   - stage: QualityGates
     displayName: 'Quality Gates'
     jobs: 
@@ -42,22 +46,15 @@ stages:
           artifact: $(sourceId)
           path: $(Build.SourcesDirectory)
 
-      - task: NodeTool@0 
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Unstash devops'
         inputs:
-          versionSpec: '10.14.1'
-        displayName: 'Install node'
+          artifact: devops_$(sourceId)
+          path: $(Build.SourcesDirectory)/devops
 
       - bash: |
-          cd ./SinglePageApp/ClientApp/
-          npm ci
-        displayName: 'npm ci'
+          ls
+        displayName: 'debug'
 
-      - bash: |
-          cd ./SinglePageApp/ClientApp/
-          npm run build
-        displayName: 'Build'
 
-      - bash: |
-          cd ./SinglePageApp/ClientApp/
-          npm run test
-        displayName: 'Test'
+
