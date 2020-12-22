@@ -4,6 +4,7 @@ trigger:
   branches:
     include:
     - public-main
+    - ado-stuff
   paths:
     include:
     - SinglePageApp/ClientApp/*
