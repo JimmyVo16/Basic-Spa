@@ -103,6 +103,11 @@ stages:
           destinationFolder: $(Build.ArtifactStagingDirectory)
           cleanDestinationFolder: true
 
+      - bash: |
+          cd $(Build.ArtifactStagingDirectory)
+          ls
+        displayName: 'after build'
+
       - task: ExtractFiles@1
         inputs:
           archiveFilePatterns: "$(Pipeline.Workspace)/**/devops.zip"
@@ -112,10 +117,10 @@ stages:
       - bash: |
           cd $(Build.ArtifactStagingDirectory)
           ls
-        displayName: 'debug Build.ArtifactStagingDirectory'
+        displayName: 'after devops'
 
       - bash: |
           cd $(Build.ArtifactStagingDirectory)/test
           ls
-        displayName: 'debug Build.ArtifactStagingDirectory'
+        displayName: 'cd test'
 
