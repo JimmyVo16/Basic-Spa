@@ -40,14 +40,14 @@ stages:
           artifact: $(sourceId)
           path: $(Build.SourcesDirectory)
 
-      - task: NodeTool@0 
-        inputs:
-          versionSpec: '10.14.1'
-        displayName: 'Install node'
+      # - task: NodeTool@0 
+      #   inputs:
+      #     versionSpec: '10.14.1'
+      #   displayName: 'Install node'
 
       - bash: |
-          cd ./SinglePageApp/ClientApp/
-          npm ci
+          cd ./SinglePageApp/ClientApp/devlops
+          ls
         displayName: 'npm ci'
 
 
@@ -56,75 +56,75 @@ stages:
         inputs:
           filePath: SinglePageApp/ClientApp/devlops/debugging.ps1
 
-      - bash: |
-          cd ./SinglePageApp/ClientApp/
-          npm run build
-        displayName: 'Build'
+  #     - bash: |
+  #         cd ./SinglePageApp/ClientApp/
+  #         npm run build
+  #       displayName: 'Build'
 
-      - task: ArchiveFiles@2
-        displayName: Prepare build Artifacts
-        inputs:
-          rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/build'
-          includeRootFolder: false
-          archiveType: 'zip'
-          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/build.zip'
-          replaceExistingArchive: true
+  #     - task: ArchiveFiles@2
+  #       displayName: Prepare build Artifacts
+  #       inputs:
+  #         rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/build'
+  #         includeRootFolder: false
+  #         archiveType: 'zip'
+  #         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/build.zip'
+  #         replaceExistingArchive: true
 
-      - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/build.zip'
-        displayName: Publish build artifacts
-        artifact: build_$(Build.BuildId)
+  #     - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/build.zip'
+  #       displayName: Publish build artifacts
+  #       artifact: build_$(Build.BuildId)
 
-      - task: ArchiveFiles@2
-        displayName: Prepare devlops Artifacts
-        inputs:
-          rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/devops'
-          includeRootFolder: false
-          archiveType: 'zip'
-          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/devops.zip'
-          replaceExistingArchive: true
+  #     - task: ArchiveFiles@2
+  #       displayName: Prepare devlops Artifacts
+  #       inputs:
+  #         rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/devops'
+  #         includeRootFolder: false
+  #         archiveType: 'zip'
+  #         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/devops.zip'
+  #         replaceExistingArchive: true
 
-      - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/devops.zip'
-        displayName: Publish devops artifacts
-        artifact: devops_$(Build.BuildId)
+  #     - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/devops.zip'
+  #       displayName: Publish devops artifacts
+  #       artifact: devops_$(Build.BuildId)
 
-  - stage: Download
-    displayName: 'Download'
-    jobs: 
-    - job: working
-      displayName: 'working'
-      steps:
-      - checkout: none
+  # - stage: Download
+  #   displayName: 'Download'
+  #   jobs: 
+  #   - job: working
+  #     displayName: 'working'
+  #     steps:
+  #     - checkout: none
 
-      - download: current
-        artifact: build_$(Build.BuildId)
+  #     - download: current
+  #       artifact: build_$(Build.BuildId)
         
-      - download: current
-        artifact: devops_$(Build.BuildId)
+  #     - download: current
+  #       artifact: devops_$(Build.BuildId)
 
-      - task: ExtractFiles@1
-        inputs:
-          archiveFilePatterns: "$(Pipeline.Workspace)/**/build.zip"
-          destinationFolder: $(Build.ArtifactStagingDirectory)
-          cleanDestinationFolder: true
+  #     - task: ExtractFiles@1
+  #       inputs:
+  #         archiveFilePatterns: "$(Pipeline.Workspace)/**/build.zip"
+  #         destinationFolder: $(Build.ArtifactStagingDirectory)
+  #         cleanDestinationFolder: true
 
-      - bash: |
-          cd $(Build.ArtifactStagingDirectory)
-          ls
-        displayName: 'after build'
+  #     - bash: |
+  #         cd $(Build.ArtifactStagingDirectory)
+  #         ls
+  #       displayName: 'after build'
 
-      - task: ExtractFiles@1
-        inputs:
-          archiveFilePatterns: "$(Pipeline.Workspace)/**/devops.zip"
-          destinationFolder: $(Build.ArtifactStagingDirectory)/test
-          cleanDestinationFolder: true
+  #     - task: ExtractFiles@1
+  #       inputs:
+  #         archiveFilePatterns: "$(Pipeline.Workspace)/**/devops.zip"
+  #         destinationFolder: $(Build.ArtifactStagingDirectory)/test
+  #         cleanDestinationFolder: true
 
-      - bash: |
-          cd $(Build.ArtifactStagingDirectory)
-          ls
-        displayName: 'after devops'
+  #     - bash: |
+  #         cd $(Build.ArtifactStagingDirectory)
+  #         ls
+  #       displayName: 'after devops'
 
-      - bash: |
-          cd $(Build.ArtifactStagingDirectory)/test
-          ls
-        displayName: 'cd test'
+  #     - bash: |
+  #         cd $(Build.ArtifactStagingDirectory)/test
+  #         ls
+  #       displayName: 'cd test'
 
