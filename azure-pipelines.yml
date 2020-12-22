@@ -46,7 +46,7 @@ stages:
       #   displayName: 'Install node'
 
       - bash: |
-          cd ./SinglePageApp/ClientApp/devlops
+          cd ./SinglePageApp/ClientApp/devops
           ls
         displayName: 'npm ci'
 
@@ -54,7 +54,7 @@ stages:
       - task: PowerShell@2
         displayName: testing
         inputs:
-          filePath: SinglePageApp/ClientApp/devlops/debugging.ps1
+          filePath: SinglePageApp/ClientApp/devops/debugging.ps1
 
   #     - bash: |
   #         cd ./SinglePageApp/ClientApp/
