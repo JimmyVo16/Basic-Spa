@@ -56,8 +56,32 @@ stages:
           rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/devops'
           includeRootFolder: false
           archiveType: 'zip'
-          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/test.zip'
           replaceExistingArchive: true
 
+      - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/test.zip'
+        displayName: Publish artifacts
+        artifact: jimmy
 
+  - stage: Download
+    displayName: 'Download'
+    jobs: 
+    - job: working
+      displayName: 'working'
+      steps:
+      - checkout: none
+
+      - download: current
+        artifact: jimmy
+
+      - task: ExtractFiles@1
+        inputs:
+          archiveFilePatterns: " $(Pipeline.Workspace)/**/$(Build.BuildId)/test.zip"
+          destinationFolder: $(Build.ArtifactStagingDirectory)
+          cleanDestinationFolder: true
+
+      - bash: |
+          cd $(Build.ArtifactStagingDirectory)
+          ls
+        displayName: 'debug Build.ArtifactStagingDirectory'
 
