@@ -57,7 +57,7 @@ stages:
 
       - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/test.zip'
         displayName: Publish artifacts
-        artifact: AutoSiteProvisioning_Build_$(Build.BuildId)
+        artifact: Test_$(Build.BuildId)
 
   - stage: Download
     displayName: 'Download'
@@ -68,11 +68,11 @@ stages:
       - checkout: none
 
       - download: current
-        artifact: AutoSiteProvisioning_Build_$(Build.BuildId)
+        artifact: Test_$(Build.BuildId)
 
       - task: ExtractFiles@1
         inputs:
-          archiveFilePatterns: "$(Pipeline.Workspace)/$(Build.BuildId)/test.zip"
+          archiveFilePatterns: "$(Pipeline.Workspace)/**/*.zip"
           destinationFolder: $(Build.ArtifactStagingDirectory)
           cleanDestinationFolder: true
 
