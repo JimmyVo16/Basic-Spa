@@ -110,6 +110,7 @@ stages:
         inputs:
           archiveFilePatterns: "$(Pipeline.Workspace)/**/devops.zip"
           destinationFolder: $(Build.ArtifactStagingDirectory)
+          cleanDestinationFolder: false
 
       - bash: |
           cd $(Build.ArtifactStagingDirectory)
