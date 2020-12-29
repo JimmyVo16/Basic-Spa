@@ -2,9 +2,6 @@ parameters:
   build_artifact_name: ""
   source_id: ""
 
-variables:
-  config_artifact_name: config_$(Build.BuildId)
-
 stages:
   - stage: DeployToAWS
     displayName: 'Deploy to AWS'
@@ -39,7 +36,7 @@ stages:
 
       - publish: '$(Build.ArtifactStagingDirectory)/Packages/$(Build.BuildId)/config.zip'
         displayName: Publish Configuration Artifacts
-        artifact: $(config_artifact_name)
+        artifact: config_$(Build.BuildId)
 
   - deployment: DeployToAWS
     dependsOn: AddConfiguration
@@ -66,7 +63,7 @@ stages:
 
             - download: current
               displayName: "Dowload configuration artifacts"
-              artifact: $(config_artifact_name)
+              artifact: config_$(Build.BuildId)
 
             - task: ExtractFiles@1
               displayName: "Extract configuration files from artifacts"
