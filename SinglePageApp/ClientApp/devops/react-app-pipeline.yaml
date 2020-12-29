@@ -28,7 +28,7 @@ stages:
           artifact: $(sourceId)
 
   - template: /ci-stage.yml
-    inputs:
+    parameters:
       build_artifact_name: $(build_artifact_name)
       source_id: $(source_id)
 
