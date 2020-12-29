@@ -1,0 +1,75 @@
+parameters:
+  build_artifact_name: ""
+  source_id: ""
+
+stages:
+  - stage: DeployToAWS
+    displayName: 'Deploy to AWS'
+    jobs: 
+    - job: AddConfiguration
+      displayName: 'Add Configuration'
+      steps:
+      - checkout: none
+
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Unstash source'
+        inputs:
+          artifact: ${{ parameters.source_id }}
+          path: $(Build.SourcesDirectory)
+
+      - task: PowerShell@2
+        displayName: Append config values to env file
+        inputs:
+          filePath: ./config-environment-variables.ps1
+          arguments:
+            -apiBaseUrl "Hello Jimmy"
+            -envFilePath "../config/globalVariables.js"
+
+      - task: ArchiveFiles@2
+        displayName: Prepare Configuration Artifacts
+        inputs:
+          rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/config/globalVariables.js'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/Packages/$(Build.BuildId)/utils.zip'
+          replaceExistingArchive: true
+
+      - publish: '$(Build.ArtifactStagingDirectory)/Packages/$(Build.BuildId)/utils.zip'
+        displayName: Publish Configuration Artifacts
+        artifact: Config_$(Build.BuildId)
+
+  # - stage: Download
+  #   displayName: 'Download'
+  #   jobs: 
+  #   - job: working
+  #     displayName: 'working'
+  #     steps:
+  #     - checkout: none
+
+  #     - download: current
+  #       artifact: build_$(Build.BuildId)
+        
+  #     - download: current
+  #       artifact: devops_$(Build.BuildId)
+
+  #     - task: ExtractFiles@1
+  #       inputs:
+  #         archiveFilePatterns: "$(Pipeline.Workspace)/**/build.zip"
+  #         destinationFolder: $(Build.ArtifactStagingDirectory)
+  #         cleanDestinationFolder: true
+
+  #     - bash: |
+  #         cd $(Build.ArtifactStagingDirectory)
+  #         ls
+  #       displayName: 'after build'
+
+  #     - task: ExtractFiles@1
+  #       inputs:
+  #         archiveFilePatterns: "$(Pipeline.Workspace)/**/devops.zip"
+  #         destinationFolder: $(Build.ArtifactStagingDirectory)
+  #         cleanDestinationFolder: false
+
+  #     - bash: |
+  #         cd $(Build.ArtifactStagingDirectory)
+  #         ls
+  #       displayName: 'after devops'
