@@ -49,8 +49,6 @@ stages:
           deploy:
             steps:
               - download: current
-
-              - download: current
                 displayName: "Download build artifact"
                 artifact: ${{ parameters.build_artifact_name }}
 
@@ -83,3 +81,4 @@ stages:
                   logRequest: true
                   logResponse: true
                   awsCredentials: $(AWS_UserName)
+                  regionName: "us-east-1"
