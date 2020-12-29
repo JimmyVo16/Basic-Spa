@@ -2,6 +2,9 @@ parameters:
   build_artifact_name: ""
   source_id: ""
 
+variables:
+  config_artifact_name: config_$(Build.BuildId)
+
 stages:
   - stage: DeployToAWS
     displayName: 'Deploy to AWS'
@@ -23,53 +26,63 @@ stages:
           filePath: ./SinglePageApp/ClientApp/devops/config-environment-variables.ps1
           arguments:
             -apiBaseUrl "Hello Jimmy"
-            -envFilePath "./SinglePageApp/ClientApp/config/globalVariables.js"
+            -envFilePath "./SinglePageApp/ClientApp/public/globalVariables.js"
 
       - task: ArchiveFiles@2
         displayName: Prepare Configuration Artifacts
         inputs:
-          rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/config/globalVariables.js'
+          rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/public/globalVariables.js'
           includeRootFolder: false
           archiveType: 'zip'
-          archiveFile: '$(Build.ArtifactStagingDirectory)/Packages/$(Build.BuildId)/utils.zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/Packages/$(Build.BuildId)/config.zip'
           replaceExistingArchive: true
 
-      - publish: '$(Build.ArtifactStagingDirectory)/Packages/$(Build.BuildId)/utils.zip'
+      - publish: '$(Build.ArtifactStagingDirectory)/Packages/$(Build.BuildId)/config.zip'
         displayName: Publish Configuration Artifacts
-        artifact: Config_$(Build.BuildId)
+        artifact: $(config_artifact_name)
 
-  # - stage: Download
-  #   displayName: 'Download'
-  #   jobs: 
-  #   - job: working
-  #     displayName: 'working'
-  #     steps:
-  #     - checkout: none
+  - deployment: DeployToAWS
+    dependsOn: AddConfiguration
+    displayName: Deploy to AWS S3 bucket
+    pool:
+      vmImage: "ubuntu-latest"
+    environment: $(ADO_Env)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - download: current
 
-  #     - download: current
-  #       artifact: build_$(Build.BuildId)
-        
-  #     - download: current
-  #       artifact: devops_$(Build.BuildId)
+            - download: current
+              displayName: "Download build artifact"
+              artifact: ${{ parameters.build_artifact_name }}
 
-  #     - task: ExtractFiles@1
-  #       inputs:
-  #         archiveFilePatterns: "$(Pipeline.Workspace)/**/build.zip"
-  #         destinationFolder: $(Build.ArtifactStagingDirectory)
-  #         cleanDestinationFolder: true
+            - task: ExtractFiles@1
+              displayName: "Extra build files from artifacts"
+              inputs:
+                archiveFilePatterns: "$(Pipeline.Workspace)/**/build.zip"
+                destinationFolder: $(Build.ArtifactStagingDirectory)
+                cleanDestinationFolder: true
 
-  #     - bash: |
-  #         cd $(Build.ArtifactStagingDirectory)
-  #         ls
-  #       displayName: 'after build'
+            - download: current
+              displayName: "Dowload configuration artifacts"
+              artifact: $(config_artifact_name)
 
-  #     - task: ExtractFiles@1
-  #       inputs:
-  #         archiveFilePatterns: "$(Pipeline.Workspace)/**/devops.zip"
-  #         destinationFolder: $(Build.ArtifactStagingDirectory)
-  #         cleanDestinationFolder: false
+            - task: ExtractFiles@1
+              displayName: "Extract configuration files from artifacts"
+              inputs:
+                archiveFilePatterns: "$(Pipeline.Workspace)/**/config.zip"
+                destinationFolder: $(Build.ArtifactStagingDirectory)
+                cleanDestinationFolder: true
 
-  #     - bash: |
-  #         cd $(Build.ArtifactStagingDirectory)
-  #         ls
-  #       displayName: 'after devops'
+            # This is the AWS SDK S3 Upload task. Because the friendly name of the task clashes with
+            # another extension, we have to specify the task via the guid, which I found by looking at
+            # the source: https://github.com/aws/aws-toolkit-azure-devops/blob/master/Tasks/S3Upload/task.json
+            - task: 3a219265-181c-4ed2-9a51-75a7f308f0d5@1
+              inputs:
+                bucketName: $(AWS_S3_Bucket)
+                sourceFolder: $(Build.ArtifactStagingDirectory)
+                globExpressions: "**"
+                logRequest: true
+                logResponse: true
+                awsCredentials: $(AWS_UserName)
