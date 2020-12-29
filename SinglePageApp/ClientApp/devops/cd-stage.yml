@@ -38,48 +38,48 @@ stages:
         displayName: Publish Configuration Artifacts
         artifact: config_$(Build.BuildId)
 
-  - deployment: DeployToAWS
-    dependsOn: AddConfiguration
-    displayName: Deploy to AWS S3 bucket
-    pool:
-      vmImage: "ubuntu-latest"
-    environment: $(ADO_Env)
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-            - download: current
+    - deployment: DeployToAWS
+      dependsOn: AddConfiguration
+      displayName: Deploy to AWS S3 bucket
+      pool:
+        vmImage: "ubuntu-latest"
+      environment: $(ADO_Env)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - download: current
 
-            - download: current
-              displayName: "Download build artifact"
-              artifact: ${{ parameters.build_artifact_name }}
+              - download: current
+                displayName: "Download build artifact"
+                artifact: ${{ parameters.build_artifact_name }}
 
-            - task: ExtractFiles@1
-              displayName: "Extra build files from artifacts"
-              inputs:
-                archiveFilePatterns: "$(Pipeline.Workspace)/**/build.zip"
-                destinationFolder: $(Build.ArtifactStagingDirectory)
-                cleanDestinationFolder: true
+              - task: ExtractFiles@1
+                displayName: "Extra build files from artifacts"
+                inputs:
+                  archiveFilePatterns: "$(Pipeline.Workspace)/**/build.zip"
+                  destinationFolder: $(Build.ArtifactStagingDirectory)
+                  cleanDestinationFolder: true
 
-            - download: current
-              displayName: "Dowload configuration artifacts"
-              artifact: config_$(Build.BuildId)
+              - download: current
+                displayName: "Dowload configuration artifacts"
+                artifact: config_$(Build.BuildId)
 
-            - task: ExtractFiles@1
-              displayName: "Extract configuration files from artifacts"
-              inputs:
-                archiveFilePatterns: "$(Pipeline.Workspace)/**/config.zip"
-                destinationFolder: $(Build.ArtifactStagingDirectory)
-                cleanDestinationFolder: true
+              - task: ExtractFiles@1
+                displayName: "Extract configuration files from artifacts"
+                inputs:
+                  archiveFilePatterns: "$(Pipeline.Workspace)/**/config.zip"
+                  destinationFolder: $(Build.ArtifactStagingDirectory)
+                  cleanDestinationFolder: true
 
-            # This is the AWS SDK S3 Upload task. Because the friendly name of the task clashes with
-            # another extension, we have to specify the task via the guid, which I found by looking at
-            # the source: https://github.com/aws/aws-toolkit-azure-devops/blob/master/Tasks/S3Upload/task.json
-            - task: 3a219265-181c-4ed2-9a51-75a7f308f0d5@1
-              inputs:
-                bucketName: $(AWS_S3_Bucket)
-                sourceFolder: $(Build.ArtifactStagingDirectory)
-                globExpressions: "**"
-                logRequest: true
-                logResponse: true
-                awsCredentials: $(AWS_UserName)
+              # This is the AWS SDK S3 Upload task. Because the friendly name of the task clashes with
+              # another extension, we have to specify the task via the guid, which I found by looking at
+              # the source: https://github.com/aws/aws-toolkit-azure-devops/blob/master/Tasks/S3Upload/task.json
+              - task: 3a219265-181c-4ed2-9a51-75a7f308f0d5@1
+                inputs:
+                  bucketName: $(AWS_S3_Bucket)
+                  sourceFolder: $(Build.ArtifactStagingDirectory)
+                  globExpressions: "**"
+                  logRequest: true
+                  logResponse: true
+                  awsCredentials: $(AWS_UserName)
