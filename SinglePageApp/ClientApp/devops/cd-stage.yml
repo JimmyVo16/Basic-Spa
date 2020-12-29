@@ -20,10 +20,10 @@ stages:
       - task: PowerShell@2
         displayName: Append config values to env file
         inputs:
-          filePath: ./config-environment-variables.ps1
+          filePath: ./SinglePageApp/ClientApp/devops/config-environment-variables.ps1
           arguments:
             -apiBaseUrl "Hello Jimmy"
-            -envFilePath "../config/globalVariables.js"
+            -envFilePath "./SinglePageApp/ClientApp/config/globalVariables.js"
 
       - task: ArchiveFiles@2
         displayName: Prepare Configuration Artifacts
