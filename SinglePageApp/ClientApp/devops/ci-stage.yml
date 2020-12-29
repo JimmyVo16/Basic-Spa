@@ -3,49 +3,49 @@ parameters:
   build_artifact_name: ""
   source_id: ""
 
-- stage: QualityGates
-  displayName: 'Quality Gates'
-  jobs: 
-  - job: Build
-    displayName: 'Build'
-    steps:
-    - checkout: none
+stage: QualityGates
+displayName: 'Quality Gates'
+jobs: 
+- job: Build
+  displayName: 'Build'
+  steps:
+  - checkout: none
 
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Unstash source'
-      inputs:
-        artifact: ${{ parameters.source_id }}
-        path: $(Build.SourcesDirectory)
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Unstash source'
+    inputs:
+      artifact: ${{ parameters.source_id }}
+      path: $(Build.SourcesDirectory)
 
-    - task: NodeTool@0 
-      inputs:
-        versionSpec: '10.14.1'
-      displayName: 'Install node'
+  - task: NodeTool@0 
+    inputs:
+      versionSpec: '10.14.1'
+    displayName: 'Install node'
 
-    - bash: |
-        cd ./SinglePageApp/ClientApp/
-        npm ci
-      displayName: 'npm ci'
+  - bash: |
+      cd ./SinglePageApp/ClientApp/
+      npm ci
+    displayName: 'npm ci'
 
-    - bash: |
-        cd ./SinglePageApp/ClientApp/
-        npm run build
-      displayName: 'Build app'
+  - bash: |
+      cd ./SinglePageApp/ClientApp/
+      npm run build
+    displayName: 'Build app'
 
-    - bash: |
-        cd ./SinglePageApp/ClientApp/
-        npm run test
-      displayName: 'Run tests'
+  - bash: |
+      cd ./SinglePageApp/ClientApp/
+      npm run test
+    displayName: 'Run tests'
 
-    - task: ArchiveFiles@2
-      displayName: Prepare build artifacts
-      inputs:
-        rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/build'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/build.zip'
-        replaceExistingArchive: true
+  - task: ArchiveFiles@2
+    displayName: Prepare build artifacts
+    inputs:
+      rootFolderOrFile: '$(Build.SourcesDirectory)/SinglePageApp/ClientApp/build'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/build.zip'
+      replaceExistingArchive: true
 
-    - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/build.zip'
-      displayName: Publish build artifacts
-      artifact: ${{ parameters.build_artifact_name }}
+  - publish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/build.zip'
+    displayName: Publish build artifacts
+    artifact: ${{ parameters.build_artifact_name }}
