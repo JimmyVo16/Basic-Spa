@@ -27,7 +27,7 @@ stages:
           displayName: 'Stash source'
           artifact: $(sourceId)
 
-  - template: /ci-stage.yml
+  - template: ./ci-stage.yml
     parameters:
       build_artifact_name: $(build_artifact_name)
       source_id: $(source_id)
