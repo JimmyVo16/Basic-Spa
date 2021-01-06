@@ -7,6 +7,7 @@ stages:
 
   - job: job1
     steps:
+    - checkout: none
 
     - bash: |
         echo "##vso[task.setvariable variable=jimmyNoOutput]Jimmy 1"
@@ -19,10 +20,20 @@ stages:
       name: test2
 
     - bash: |
-        echo "var $(test1.jimmyNoOutput)"
+        echo "jimmyNoOutput $(jimmyNoOutput)"
+      displayName: "jimmyNoOutput"
 
     - bash: |
-        echo "var $(test2.jimmyWithOutput)"
+        echo "jimmyWithOutput $(jimmyWithOutput)"
+      displayName: "jimmyWithOutput"
+
+    - bash: |
+        echo "jimmyNoOutput $(test1.jimmyNoOutput)"
+      displayName: "test1.jimmyNoOutput"
+
+    - bash: |
+        echo "jimmyWithOutput $(test2.jimmyWithOutput)"
+      displayName: "test2.jimmyWithOutput"
 
   - job: job2
     dependsOn: job1
