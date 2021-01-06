@@ -8,14 +8,20 @@ stages:
   - job: Jimmy
     steps:
     # Create a variable
+    
     - bash: |
-        echo "##vso[task.setvariable variable=sauce]crushed tomatoes"
+        echo $(System.JobId)
+      displayName: "print job id"
+    
+    - bash: |
+        echo "##vso[task.setvariable variable=sauce]$(System.JobId)"
+      displayName: "assign job id"
 
     # Use the variable
     # "$(sauce)" is replaced by the contents of the `sauce` variable by Azure Pipelines
     # before handing the body of the script to the shell.
     - bash: |
-        echo my pipeline variable is $(sauce)
+        echo "job id $(sauce)"
 
   # - job: Build
   #   displayName: 'Build'
