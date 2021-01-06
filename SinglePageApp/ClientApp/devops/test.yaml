@@ -20,19 +20,19 @@ stages:
       name: test2
 
     - bash: |
-        echo "jimmyNoOutput $(jimmyNoOutput)"
+        echo "value $(jimmyNoOutput)"
       displayName: "jimmyNoOutput"
 
     - bash: |
-        echo "jimmyWithOutput $(jimmyWithOutput)"
+        echo "value $(jimmyWithOutput)"
       displayName: "jimmyWithOutput"
 
     - bash: |
-        echo "jimmyNoOutput $(test1.jimmyNoOutput)"
+        echo "value $(test1.jimmyNoOutput)"
       displayName: "test1.jimmyNoOutput"
 
     - bash: |
-        echo "jimmyWithOutput $(test2.jimmyWithOutput)"
+        echo "value $(test2.jimmyWithOutput)"
       displayName: "test2.jimmyWithOutput"
 
   - job: job2
