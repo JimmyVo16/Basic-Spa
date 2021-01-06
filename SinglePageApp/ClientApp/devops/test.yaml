@@ -5,25 +5,34 @@ stages:
   displayName: 'Quality Gates'
   jobs: 
 
-  - job: Jimmy
+  - job: job1
     steps:
-    # Create a variable
-    
-    - bash: |
-        echo $(System.JobId)
-      displayName: "print job id"
-    
-    - bash: |
-        echo "##vso[task.setvariable variable=sauce]$(System.JobId)"
-      displayName: "assign job id"
 
-    # Use the variable
-    # "$(sauce)" is replaced by the contents of the `sauce` variable by Azure Pipelines
-    # before handing the body of the script to the shell.
     - bash: |
-        echo "job id $(sauce)"
+        echo "##vso[task.setvariable variable=jimmyNoOutput]Jimmy 1"
+      displayName: "assign no output"
+      name: test1
 
-  # - job: Build
-  #   displayName: 'Build'
-  #   steps:
-  #   - checkout: none
+    - bash: |
+        echo "##vso[task.setvariable variable=jimmyWithOutput;isOutput=true]Jimmy 2"
+      displayName: "assign with output"
+      name: test2
+
+    - bash: |
+        echo "var $(test1.jimmyNoOutput)"
+
+    - bash: |
+        echo "var $(test2.jimmyWithOutput)"
+
+  - job: job2
+    dependsOn: job1
+    variables:
+      jimmyNoOutput: $[ dependencies.job1.outputs['test1.jimmyNoOutput'] ]
+      jimmyWithOutput: $[ dependencies.job1.outputs['test2.jimmyWithOutput'] ]
+    steps:
+
+    - bash: |
+        echo "jimmyNoOutput $(jimmyNoOutput)"
+
+    - bash: |
+        echo "jimmyWithOutput $(jimmyWithOutput)"
