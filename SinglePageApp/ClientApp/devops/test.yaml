@@ -1,0 +1,26 @@
+
+parameters:
+  build_artifact_name: ""
+  source_id: ""
+
+stages:
+- stage: QualityGates
+  displayName: 'Quality Gates'
+  jobs: 
+
+  - job: Jimmy
+    steps:
+    # Create a variable
+    - bash: |
+        echo "##vso[task.setvariable variable=sauce]crushed tomatoes"
+
+    # Use the variable
+    # "$(sauce)" is replaced by the contents of the `sauce` variable by Azure Pipelines
+    # before handing the body of the script to the shell.
+    - bash: |
+        echo my pipeline variable is $(sauce)
+
+  # - job: Build
+  #   displayName: 'Build'
+  #   steps:
+  #   - checkout: none
