@@ -1,7 +1,4 @@
 
-parameters:
-  build_artifact_name: ""
-  source_id: ""
 
 stages:
 - stage: QualityGates
