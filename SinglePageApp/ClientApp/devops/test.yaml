@@ -12,38 +12,43 @@ stages:
     - bash: |
         echo "##vso[task.setvariable variable=jimmyNoOutput]Jimmy 1"
       displayName: "assign no output"
-      name: test1
+      name: NoOutput
 
     - bash: |
         echo "##vso[task.setvariable variable=jimmyWithOutput;isOutput=true]Jimmy 2"
       displayName: "assign with output"
-      name: test2
+      name: WithOutput
 
     - bash: |
-        echo "value $(jimmyNoOutput)"
-      displayName: "jimmyNoOutput"
+        echo $(System.JobId)
+      displayName: Job Id
 
-    - bash: |
-        echo "value $(jimmyWithOutput)"
-      displayName: "jimmyWithOutput"
+    # - bash: |
+    #     echo "value $(jimmyNoOutput)"
+    #   displayName: "Display 1"
 
-    - bash: |
-        echo "value $(test1.jimmyNoOutput)"
-      displayName: "test1.jimmyNoOutput"
+    # - bash: |
+    #     echo "value $(jimmyWithOutput)"
+    #   displayName: "Display 2"
 
-    - bash: |
-        echo "value $(test2.jimmyWithOutput)"
-      displayName: "test2.jimmyWithOutput"
+    # - bash: |
+    #     echo "value $(NoOutput.jimmyNoOutput)"
+    #   displayName: "Display 3"
+
+    # - bash: |
+    #     echo "value $(WithOutput.jimmyWithOutput)"
+    #   displayName: "Display 4"
 
   - job: job2
     dependsOn: job1
-    variables:
-      jimmyNoOutput: $[ dependencies.job1.outputs['test1.jimmyNoOutput'] ]
-      jimmyWithOutput: $[ dependencies.job1.outputs['test2.jimmyWithOutput'] ]
+    # variables:
+    #   jimmyNoOutput: $[ dependencies.job1.outputs['test1.jimmyNoOutput'] ]
+    #   jimmyWithOutput: $[ dependencies.job1.outputs['test2.jimmyWithOutput'] ]
     steps:
 
     - bash: |
-        echo "jimmyNoOutput $(jimmyNoOutput)"
+        echo $(System.JobId)
+      displayName: Job Id
 
-    - bash: |
-        echo "jimmyWithOutput $(jimmyWithOutput)"
+    # - bash: |
+    #     echo "jimmyWithOutput $(jimmyWithOutput)"
