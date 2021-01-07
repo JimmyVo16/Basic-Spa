@@ -47,6 +47,23 @@ stages:
         displayName: Publish Configuration Artifacts
         artifact: config_$(Build.BuildId)
 
+    - job: Testing
+      dependsOn: AddConfiguration
+      variables:
+        config_artifact_name: $[dependencies.AddConfiguration.outputs[`WithOutput.jimmyWithOutput`]]
+      displayName: "Testing"
+      pool:
+        vmImage: ubuntu-latest
+        demands:
+        - npm
+      steps:
+        - checkout: none
+
+        - bash: |
+            echo $(config_artifact_name)
+          displayName: "test"
+
+
     - deployment: DeployToAWS
       dependsOn: AddConfiguration
       variables:
