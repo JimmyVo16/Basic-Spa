@@ -26,9 +26,12 @@ stages:
             -envFilePath "./SinglePageApp/ClientApp/public/globalVariables.js"
 
       - bash: |
-          echo "##vso[task.setvariable variable=jimmyWithOutput;isOutput=true;]Jimmy 2"
+          echo "##vso[task.setvariable variable=jimmyWithOutput;isOutput=true]Jimmy 2"
         displayName: "assign with output"
         name: WithOutput
+
+      - powershell: echo "##vso[task.setvariable variable=myOutputVar;isOutput=true]this is the value"
+        name: setvarStep
 
       - bash: |
            echo $(WithOutput.jimmyWithOutput)
@@ -47,11 +50,11 @@ stages:
         displayName: Publish Configuration Artifacts
         artifact: config_$(Build.BuildId)
 
-    - job: Testing
+    - job: test1
+      displayName: "test 1"
       dependsOn: AddConfiguration
       variables:
-        config_artifact_name: $[dependencies.AddConfiguration.outputs[`WithOutput.jimmyWithOutput`]]
-      displayName: "Testing"
+        myVarFromJobA: $[ dependencies.AddConfiguration.outputs['setvarStep.myOutputVar'] ]  # map in the variable
       pool:
         vmImage: ubuntu-latest
         demands:
@@ -59,10 +62,17 @@ stages:
       steps:
         - checkout: none
 
-        - bash: |
-            echo $(config_artifact_name)
-          displayName: "test"
-
+    - job: test2
+      displayName: "test 2"
+      dependsOn: AddConfiguration
+      variables:
+        myVarFromJobA: $[ dependencies.AddConfiguration.outputs[`WithOutput.jimmyWithOutput`] ]  # map in the variable
+      pool:
+        vmImage: ubuntu-latest
+        demands:
+        - npm
+      steps:
+        - checkout: none
 
     - deployment: DeployToAWS
       dependsOn: AddConfiguration

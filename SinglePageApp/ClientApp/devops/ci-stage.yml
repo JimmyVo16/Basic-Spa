@@ -13,6 +13,8 @@ stages:
     pool:
       vmImage: 'vs2017-win2016'
     steps:
+    - checkout: none
+
     - powershell: echo "##vso[task.setvariable variable=myOutputVar;isOutput=true]this is the value"
       name: setvarStep
     # - script: echo $(setvarStep.myOutputVar)
@@ -27,6 +29,8 @@ stages:
       myVarFromJobA: $[ dependencies.A.outputs['setvarStep.myOutputVar'] ]  # map in the variable
                                                                             # remember, expressions require single quotes
     steps:
+    - checkout: none
+
     - script: echo $(myVarFromJobA)
       name: echovar
 
