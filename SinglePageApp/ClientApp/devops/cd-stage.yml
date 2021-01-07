@@ -82,7 +82,7 @@ stages:
     - deployment: DeployToAWS
       dependsOn: AddConfiguration
       variables:
-        config_artifact_name: $[dependencies.AddConfiguration.outputs[`WithOutput.jimmyWithOutput`]]
+        config_artifact_name: $[dependencies.AddConfiguration.outputs[`setvarStep.myOutputVar`]]
       displayName: Deploy to AWS S3 bucket
       pool:
         vmImage: "ubuntu-latest"
