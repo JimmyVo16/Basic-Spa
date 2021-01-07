@@ -74,6 +74,9 @@ stages:
       steps:
         - checkout: none
 
+        - script: echo $(myVarFromJobA)
+          name: echovar
+
     - deployment: DeployToAWS
       dependsOn: AddConfiguration
       variables:
