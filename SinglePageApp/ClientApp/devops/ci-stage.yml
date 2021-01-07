@@ -30,17 +30,6 @@ stages:
     - script: echo $(myVarFromJobA)
       name: echovar
 
-  # Map the variable from the debug job
-  - job: B
-    dependsOn: A
-    pool:
-      vmImage: 'ubuntu-18.04'
-    variables:
-      myVarFromJobADebug: $[ dependencies.A.outputs['debugJob.setvarStep.myOutputVar'] ]
-    steps:
-    - script: echo $(myVarFromJobADebug)
-      name: echovar
-
   - job: Build
     displayName: 'Build'
     steps:
