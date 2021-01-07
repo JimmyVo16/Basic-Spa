@@ -53,7 +53,7 @@ stages:
     - job: test1
       displayName: "test 1"
       dependsOn: AddConfiguration
-      variables:
+      variables: 
         myVarFromJobA: $[ dependencies.AddConfiguration.outputs['setvarStep.myOutputVar'] ]  # map in the variable
       pool:
         vmImage: ubuntu-latest
@@ -68,7 +68,7 @@ stages:
       displayName: "test 2"
       dependsOn: AddConfiguration
       variables:
-        myVarFromJobA: $[ dependencies.AddConfiguration.outputs[`WithOutput.jimmyWithOutput`] ]  # map in the variable
+        myVarFromJobA: $[ dependencies.AddConfiguration.outputs['WithOutput.jimmyWithOutput'] ]  # map in the variable
       pool:
         vmImage: ubuntu-latest
         demands:
@@ -82,7 +82,7 @@ stages:
     - deployment: DeployToAWS
       dependsOn: AddConfiguration
       variables:
-        config_artifact_name: $[dependencies.AddConfiguration.outputs[`setvarStep.myOutputVar`]]
+        config_artifact_name: $[ dependencies.AddConfiguration.outputs['setvarStep.myOutputVar'] ]
       displayName: Deploy to AWS S3 bucket
       pool:
         vmImage: "ubuntu-latest"
